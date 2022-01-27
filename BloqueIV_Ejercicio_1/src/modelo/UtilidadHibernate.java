@@ -16,11 +16,14 @@ import org.hibernate.cfg.Configuration;
  * @author Aurora
  *
  */
-
+/*
+ * Esto es un cambio para forzar la actualización en GitHub
+ */
 public class UtilidadHibernate {
 
 		private static final SessionFactory sesionFactoria = new Configuration().configure().buildSessionFactory();
 
+		
 		public static SessionFactory getSesionfactoria() {
 			return sesionFactoria;
 		}
