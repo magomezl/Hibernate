@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 26 ene 2022 14:21:38 by Hibernate Tools 5.5.7.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class  dynamic-insert="false" dynamic-update="false" mutable="true" name="modelo.Departamentos" optimistic-lock="none" polymorphism="implicit" select-before-update="false" table="departamentos">
+        <id name="deptno" type="byte">
+            <column name="deptno"/>
+            <generator class="assigned"/>
+        </id>
+        <property generated="never" lazy="false" name="dnombre" optimistic-lock="true" type="string" unique="false">
+            <column length="15" name="dnombre"/>
+        </property>
+        <property generated="never" lazy="false" name="loc" optimistic-lock="true" type="string" unique="false">
+            <column length="15" name="loc"/>
+        </property>
+        <set embed-xml="true" fetch="select" inverse="true" lazy="true" mutable="true" name="empleadoses" optimistic-lock="true" sort="unsorted" table="empleados">
+            <key on-delete="noaction">
+                <column name="dept_no" not-null="true"/>
+            </key>
+            <one-to-many class="modelo.Empleados" embed-xml="true" not-found="exception"/>
+        </set>
+    </class>
+</hibernate-mapping>

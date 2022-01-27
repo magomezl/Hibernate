@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 26 ene 2022 14:21:38 by Hibernate Tools 5.5.7.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- catalog="empresa" -->
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class  dynamic-insert="false" dynamic-update="false" mutable="true" name="modelo.Empleados" optimistic-lock="none" polymorphism="implicit" select-before-update="false" table="empleados">
+        <id name="empno" type="short">
+            <column name="empno"/>
+            <generator class="assigned"/>
+        </id>
+        <many-to-one class="modelo.Departamentos" embed-xml="true" fetch="select" insert="true" name="departamentos" not-found="exception" optimistic-lock="true" unique="false" update="true">
+            <column name="dept_no" not-null="true"/>
+        </many-to-one>
+        <property generated="never" lazy="false" name="apellido" optimistic-lock="true" type="string" unique="false">
+            <column length="10" name="apellido"/>
+        </property>
+        <property generated="never" lazy="false" name="oficio" optimistic-lock="true" type="string" unique="false">
+            <column length="10" name="oficio"/>
+        </property>
+        <property generated="never" lazy="false" name="dir" optimistic-lock="true" type="java.lang.Short" unique="false">
+            <column name="dir"/>
+        </property>
+        <property generated="never" lazy="false" name="fechaAlt" optimistic-lock="true" type="date" unique="false">
+            <column length="10" name="fecha_alt"/>
+        </property>
+        <property generated="never" lazy="false" name="salario" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="salario" precision="12" scale="0"/>
+        </property>
+        <property generated="never" lazy="false" name="comision" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="comision" precision="12" scale="0"/>
+        </property>
+    </class>
+</hibernate-mapping>
