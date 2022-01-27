@@ -18,6 +18,7 @@ import org.hibernate.cfg.Configuration;
  */
 /*
  * Esto es un cambio para forzar la actualización en GitHub
+ * xllxllxllx
  */
 public class UtilidadHibernate {
 
