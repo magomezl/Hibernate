@@ -1,0 +1,233 @@
+package modelo;
+
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.PersistenceException;
+import javax.xml.xquery.XQConnection;
+import javax.xml.xquery.XQException;
+import javax.xml.xquery.XQPreparedExpression;
+import javax.xml.xquery.XQResultSequence;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+import org.w3c.dom.Node;
+
+import clasesHibernate.Ciudades;
+import clasesHibernate.Idiomas;
+import clasesHibernate.Paises;
+import clasesHibernate.Religiones;
+
+public class HibernateXQJ {
+	private static Configuration cfg = new Configuration().configure();
+	private static SessionFactory sf = cfg.buildSessionFactory();
+	
+	private static XQConnection xqc = ConexionXQJ.getInstancia("admin", "toor").getCon();
+	
+	
+	public static void main(String[] args) {
+		try {
+			Session sesion = sf.openSession();
+			Transaction t = sesion.beginTransaction();
+//			traspasaReligiones(sesion)==-1 ||
+//			traspasaPaises(sesion)==-1 || traspasaCiudades(sesion)==-1
+//			traspasaIdiomas(sesion)==-1 || 
+			if (traspasaIdiomasPaises(sesion)==-1 || traspasaPracticaReligiones(sesion)==-1) {
+				t.rollback();
+			}else {
+				t.commit();
+			}
+
+			sesion.close();
+
+			xqc.close();
+		} catch (XQException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	
+	// Solo se ha visto copia de religiones
+	
+	private static int traspasaPaises(Session sesion) {
+		try {
+			String queryPais = " for $p in doc('EjerciciosRepaso/religiones.xml')//paises/pais \r\n"
+					+ "    return \r\n"
+					+ "        $p"; 
+			XQPreparedExpression exprPais = xqc.prepareExpression(queryPais);
+			XQResultSequence resultPais = exprPais.executeQuery();
+			while(resultPais.next()) {
+				Node nodo = resultPais.getNode();
+				// <superficie> sería el nodo 0, su contenido el nodo 1, <km_linea_costa> sería el nodo 2, su contenido el nodo 3, y así sucesivamente 
+				Paises pais = new Paises(
+						nodo.getAttributes().getNamedItem("nombre").getNodeValue(),
+						Float.parseFloat(nodo.getAttributes().getNamedItem("num_habitantes").getNodeValue()),
+						Float.parseFloat(nodo.getChildNodes().item(1).getTextContent()),
+						Float.parseFloat(nodo.getChildNodes().item(3).getTextContent()),
+						Float.parseFloat(nodo.getChildNodes().item(5).getTextContent()),
+						Float.parseFloat(nodo.getChildNodes().item(7).getTextContent()), null, null, null);
+				sesion.persist(pais);
+			}
+		}catch (PersistenceException e) {
+			//Capturo esta excepción para que no tener problemas con los valores unique de las tablas 
+			return -1;
+		} catch (XQException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+		return 0;
+
+	}
+
+	private static int traspasaCiudades(Session sesion) {
+		try {
+			String queryCity = "for $c in doc('EjerciciosRepaso/religiones.xml')//ciudades/ciudad\r\n"
+					+ "let $p := doc('EjerciciosRepaso/religiones.xml')//paises/pais[@id_pais = $c/@pais]/@nombre\r\n"
+					+ "return <ciudad \r\n"
+					+ "    nombre=\"{$c/@nombre}\" \r\n"
+					+ "    num_habitantes=\"{$c/@num_habitantes}\" \r\n"
+					+ "    pais=\"{$p}\">\r\n"
+					+ "    {$c/*}\r\n"
+					+ "</ciudad>"; 
+			XQPreparedExpression exprCity = xqc.prepareExpression(queryCity);
+			XQResultSequence resultCity = exprCity.executeQuery();
+			while(resultCity.next()) {
+				Node nodo = resultCity.getNode();
+				Paises pais = sesion.createQuery("from Paises where nombre='" + nodo.getAttributes().getNamedItem("pais").getNodeValue()+ "'", Paises.class).getResultList().getFirst();
+				Ciudades city = new Ciudades(pais, 
+						nodo.getAttributes().getNamedItem("nombre").getNodeValue(),
+						Float.parseFloat(nodo.getAttributes().getNamedItem("num_habitantes").getNodeValue()),
+						Float.parseFloat(nodo.getChildNodes().item(1).getTextContent()),
+						Float.parseFloat(nodo.getChildNodes().item(3).getTextContent()),
+						Float.parseFloat(nodo.getChildNodes().item(5).getTextContent()),
+						Float.parseFloat(nodo.getChildNodes().item(7).getTextContent()));
+						 
+				sesion.persist(city);
+			}
+			
+		}catch (PersistenceException e) {
+			return -1;
+			//Capturo esta excepción para que no tener problemas con los valores unique de las tablas 
+		} catch (XQException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+		return 0;
+	}
+	
+	private static int traspasaPracticaReligiones(Session sesion) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private static int traspasaIdiomas(Session sesion) {
+		try {
+
+			String queryIdioma = "for $p in doc(\"EjerciciosRepaso/religiones.xml\")/geografia/paises/pais\r\n"
+					+ "	return data($p//@idioma_oficial)";
+
+
+			XQPreparedExpression exprIdioma = xqc.prepareExpression(queryIdioma);
+			XQResultSequence resulIdioma = exprIdioma.executeQuery();
+			HashSet<String> idiomas = new HashSet<String>();
+			while(resulIdioma.next()) {
+				idiomas.add(resulIdioma.getAtomicValue());
+			}
+			for (String idi: idiomas) {
+				Idiomas idioma = new Idiomas(idi);
+				sesion.persist(idioma);
+			}
+			
+			
+			
+		} catch (XQException e) {
+			
+			e.printStackTrace();
+			return -1;
+		}catch (PersistenceException e) {
+			//Capturo esta excepción para que no tener problemas con los valores unique de las tablas 
+			return -1;
+		}
+		return 0;
+		
+	}
+	
+	private static int traspasaIdiomasPaises(Session sesion) {
+		try {
+			String queryPais = " for $p in doc('EjerciciosRepaso/religiones.xml')//paises/pais \r\n"
+					+ "    return \r\n"
+					+ "        $p"; 
+			XQPreparedExpression exprPais = xqc.prepareExpression(queryPais);
+			XQResultSequence resultPais = exprPais.executeQuery();
+			while(resultPais.next()) {
+				
+				Node nodo = resultPais.getNode();
+				//Obtengo pais y asigno idioma 
+				
+				String hql = "FROM Paises p WHERE p.nombre = :nombrePais";
+				Query query = sesion.createQuery(hql, Paises.class);
+				query.setParameter("nombrePais", nodo.getAttributes().getNamedItem("nombre").getNodeValue());
+				Paises pais = (Paises) query.uniqueResult();
+				pais.getIdiomases().add(nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
+				
+				
+				String hql2 = "FROM Idiomas i WHERE i.idioma = :nombreIdioma";
+				Query query2 = sesion.createQuery(hql2, Idiomas.class);
+				query2.setParameter("nombreIdioma", nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
+				Idiomas idioma = (Idiomas) query2.uniqueResult();
+				pais.getIdiomases().add(nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
+				idioma.getPaiseses().add(nodo.getAttributes().getNamedItem("nombre").getNodeValue());
+				
+				System.out.println(pais);
+				sesion.update(idioma);
+				sesion.update(pais);
+			}
+		}catch (PersistenceException e) {
+			//Capturo esta excepción para que no tener problemas con los valores unique de las tablas 
+			return -1;
+		} catch (XQException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+		return 0;
+	}
+
+	
+	
+	private static int traspasaReligiones(Session sesion) {
+		try {
+
+			String queryRel = "for $r in doc(\"EjerciciosRepaso/religiones.xml\")/geografia/religiones/religion  \r\n"
+					+ "return <religion denominacion='{$r/@denominacion}'/>";
+
+
+			XQPreparedExpression exprRel = xqc.prepareExpression(queryRel);
+			XQResultSequence resultRel = exprRel.executeQuery();
+			while(resultRel.next()) {
+				Node nodo = resultRel.getNode();
+				Religiones religion = new Religiones(nodo.getAttributes().getNamedItem("denominacion").getNodeValue());
+				sesion.persist(religion);
+			}
+			
+		} catch (XQException e) {
+			
+			e.printStackTrace();
+			return -1;
+		}catch (PersistenceException e) {
+			//Capturo esta excepción para que no tener problemas con los valores unique de las tablas 
+			return -1;
+		}
+		return 0;
+	}
+	
+	
+
+}

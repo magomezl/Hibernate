@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<paises>
+    <pais nombre="España">
+        <habitantes>4.742E7</habitantes>
+        <idiomas_oficiales>
+            <idioma>español</idioma>
+        </idiomas_oficiales>
+        <superficie km2_agua="115800.0" km2_tierra="506030.0" km_linea_costa="7905.0">506030.0</superficie>
+        <densidad_poblacion>93.70985909926289</densidad_poblacion>
+    </pais>
+    <pais nombre="Alemania">
+        <habitantes>8.32E7</habitantes>
+        <idiomas_oficiales>
+            <idioma>alemán</idioma>
+        </idiomas_oficiales>
+        <superficie km2_agua="8350.0" km2_tierra="348672.0" km_linea_costa="2389.0">357592.0</superficie>
+        <densidad_poblacion>238.61967694566815</densidad_poblacion>
+    </pais>
+    <pais nombre="Italia">
+        <habitantes>5.911E7</habitantes>
+        <idiomas_oficiales>
+            <idioma>italiano</idioma>
+        </idiomas_oficiales>
+        <superficie km2_agua="7200.0" km2_tierra="294140.0" km_linea_costa="7914.0">302073.0</superficie>
+        <densidad_poblacion>200.95872713673762</densidad_poblacion>
+    </pais>
+    <pais nombre="Suiza">
+        <habitantes>8703000.0</habitantes>
+        <idiomas_oficiales>
+            <idioma>alemán</idioma>
+            <idioma>francés</idioma>
+            <idioma>italiano</idioma>
+            <idioma>Romanche</idioma>
+        </idiomas_oficiales>
+        <superficie km2_agua="1740.0" km2_tierra="39550.0" km_linea_costa="0.0">41285.0</superficie>
+        <densidad_poblacion>220.05056890012642</densidad_poblacion>
+    </pais>
+    <pais nombre="Bélgica">
+        <habitantes>1.159E7</habitantes>
+        <idiomas_oficiales>
+            <idioma>francés</idioma>
+            <idioma>alemán</idioma>
+            <idioma>neerlandes</idioma>
+        </idiomas_oficiales>
+        <superficie km2_agua="1892.0" km2_tierra="28795.0" km_linea_costa="66.5">30688.0</superficie>
+        <densidad_poblacion>402.5004341031429</densidad_poblacion>
+    </pais>
+</paises>

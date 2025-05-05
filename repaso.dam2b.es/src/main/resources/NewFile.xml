@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<geografia>
+    <paises>
+          <pais nombre="España" habitantes="47420000">
+           ...    
+    </paises>
+
+     <idiomas_oficiales>
+          <idioma>español</idioma>
+
+           ...     
+      </idiomas_oficiales>
+</geografia>

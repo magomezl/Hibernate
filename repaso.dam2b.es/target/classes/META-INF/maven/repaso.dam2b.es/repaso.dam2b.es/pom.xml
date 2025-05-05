@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>repaso.dam2b.es</groupId>
+  <artifactId>repaso.dam2b.es</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+    <!-- OpenCSV. Leer documentos CSV -->
+  	<dependency>
+		<groupId>com.opencsv</groupId>
+		<artifactId>opencsv</artifactId>
+		<version>3.7</version>
+		<scope>compile</scope>
+	</dependency>
+	<!-- JAXB -->
+	<dependency>
+		<groupId>javax.xml.bind</groupId>
+		<artifactId>jaxb-api</artifactId>
+		<version>2.3.1</version>
+	</dependency>
+	<dependency>
+		<groupId>org.glassfish.jaxb</groupId>
+		<artifactId>jaxb-runtime</artifactId>
+		<version>2.3.1</version>
+	</dependency>
+	<!-- Leer archivos Microsoft Office -->
+	<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+	<!-- Para trabajar con documentos excel con extensión xls-->
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi</artifactId>
+		<version>4.1.2</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+	<!-- Para trabajar con documentos excel con extensión xlsx-->
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi-ooxml</artifactId>
+		<version>4.1.2</version>
+	</dependency>
+	<!-- XML:DB-->
+	<dependency>
+		<groupId>net.sf.xmldb-org</groupId>
+		<artifactId>xmldb-api</artifactId>
+		<version>1.7.0</version>
+	</dependency>
+	<!--eXistdb -->
+	<dependency>
+		<groupId>org.exist-db</groupId>
+		<artifactId>exist-core</artifactId>
+		<version>5.0.0</version>
+		<scope>runtime</scope>
+	</dependency>
+	<!--Conector con la db MySql -->
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>8.0.33</version>
+	</dependency>
+	<!--Hibernate-->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+		<version>5.6.5.Final</version>
+	</dependency>
+	<!--mensajes de log de hibernate-->
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-core</artifactId>
+		<version>2.11.1</version>
+	</dependency>
+	
+  </dependencies>
+</project>
