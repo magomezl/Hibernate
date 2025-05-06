@@ -2,7 +2,6 @@
 <!-- Generated 29 abr 2025 14:45:44 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class catalog="geografia" name="clasesHibernate.Practicareligiones" optimistic-lock="none" table="practicareligiones">
-        <!-- 
         <composite-id class="clasesHibernate.PracticareligionesId" name="id">
             <key-property name="idPais" type="int">
                 <column name="id_pais"/>
@@ -11,7 +10,6 @@
                 <column name="id_religion"/>
             </key-property>
         </composite-id>
-         -->
         <many-to-one class="clasesHibernate.Religiones" fetch="select" insert="false" name="religiones" update="false">
             <column name="id_religion" not-null="true"/>
         </many-to-one>

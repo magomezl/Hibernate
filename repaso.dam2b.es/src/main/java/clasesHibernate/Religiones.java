@@ -25,7 +25,7 @@ public class Religiones implements java.io.Serializable {
 		this.nombre = nombre;
 		this.practicareligioneses = practicareligioneses;
 	}
-
+	// cONSTRUCTOR que creamos cuando corregimos el fichero de mapeo
 	public Religiones(String nombre) {
 		this.nombre = nombre;
 	}

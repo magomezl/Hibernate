@@ -21,6 +21,7 @@ import clasesHibernate.Ciudades;
 import clasesHibernate.Idiomas;
 import clasesHibernate.Paises;
 import clasesHibernate.Practicareligiones;
+import clasesHibernate.PracticareligionesId;
 import clasesHibernate.Religiones;
 
 public class HibernateXQJ {
@@ -34,11 +35,9 @@ public class HibernateXQJ {
 		try {
 			Session sesion = sf.openSession();
 			Transaction t = sesion.beginTransaction();
-//			traspasaReligiones(sesion)==-1 ||
-//			traspasaPaises(sesion)==-1 || traspasaCiudades(sesion)==-1
-//			traspasaIdiomas(sesion)==-1 || 
-			if (traspasaReligiones(sesion)==-1 || traspasaPaises(sesion)==-1 || traspasaCiudades(sesion)==-1 || traspasaIdiomas(sesion)==-1 ||
-					traspasaIdiomasPaises(sesion)==-1 || traspasaPracticaReligiones(sesion)==-1) {
+			
+			if (traspasaReligiones(sesion)==-1 || traspasaPaises(sesion)==-1 || traspasaCiudades(sesion)==-1 
+					|| traspasaIdiomas(sesion)==-1 || traspasaIdiomasPaises(sesion)==-1 || traspasaPracticaReligiones(sesion)==-1){
 				t.rollback();
 			}else {
 				t.commit();
@@ -65,7 +64,8 @@ public class HibernateXQJ {
 			XQResultSequence resultPais = exprPais.executeQuery();
 			while(resultPais.next()) {
 				Node nodo = resultPais.getNode();
-				// <superficie> sería el nodo 0, su contenido el nodo 1, <km_linea_costa> sería el nodo 2, su contenido el nodo 3, y así sucesivamente 
+				// <superficie> sería el nodo 0, su contenido el nodo 1, <km_linea_costa> sería el nodo 2, su contenido el nodo 3, y así sucesivamente
+				
 				Paises pais = new Paises(
 						nodo.getAttributes().getNamedItem("nombre").getNodeValue(),
 						Float.parseFloat(nodo.getAttributes().getNamedItem("num_habitantes").getNodeValue()),
@@ -101,7 +101,9 @@ public class HibernateXQJ {
 			XQResultSequence resultCity = exprCity.executeQuery();
 			while(resultCity.next()) {
 				Node nodo = resultCity.getNode();
-				Paises pais = sesion.createQuery("from Paises where nombre='" + nodo.getAttributes().getNamedItem("pais").getNodeValue()+ "'", Paises.class).getResultList().getFirst();
+				Paises pais = sesion.createQuery("from Paises where nombre='" + 
+						nodo.getAttributes().getNamedItem("pais").getNodeValue()+ "'", Paises.class).getResultList().getFirst();
+				
 				Ciudades city = new Ciudades(pais, 
 						nodo.getAttributes().getNamedItem("nombre").getNodeValue(),
 						Float.parseFloat(nodo.getAttributes().getNamedItem("num_habitantes").getNodeValue()),
@@ -124,6 +126,14 @@ public class HibernateXQJ {
 		return 0;
 	}
 	
+//	
+//	
+//	
+//	
+//	
+//	
+//	
+//	
 	private static int traspasaPracticaReligiones(Session sesion) {
 		try {
 			String queryPractica = "for $practica in doc('EjerciciosRepaso/religiones.xml')//religiones_en_paises/practica\r\n"
@@ -150,7 +160,8 @@ public class HibernateXQJ {
 				query2.setParameter("nombreReligion", nodo.getAttributes().getNamedItem("religion").getNodeValue());
 				Religiones religion = (Religiones) query2.uniqueResult();
 								
-				Practicareligiones practicaR = new Practicareligiones(religion, pais, Float.parseFloat(nodo.getAttributes().getNamedItem("practicantes").getNodeValue()));
+				Practicareligiones practicaR = new Practicareligiones(new PracticareligionesId(pais.getIdPais(), religion.getIdReligion()), 
+						religion, pais, Float.parseFloat(nodo.getAttributes().getNamedItem("practicantes").getNodeValue()));
 				sesion.persist(practicaR);
 			}
 		}catch (PersistenceException e) {
@@ -164,7 +175,7 @@ public class HibernateXQJ {
 		}
 		return 0;
 		
-
+		
 	}
 
 	private static int traspasaIdiomas(Session sesion) {
@@ -214,27 +225,20 @@ public class HibernateXQJ {
 				String hql = "FROM Paises p WHERE p.nombre = :nombrePais";
 				Query query = sesion.createQuery(hql, Paises.class);
 				query.setParameter("nombrePais", nodo.getAttributes().getNamedItem("nombre").getNodeValue());
-				Paises pais = new Paises(); 
-				pais = (Paises) query.uniqueResult();
+				Paises pais = (Paises) query.uniqueResult();
 				
 				String hql2 = "FROM Idiomas i WHERE i.idioma = :nombreIdioma";
 				Query query2 = sesion.createQuery(hql2, Idiomas.class);
 				query2.setParameter("nombreIdioma", nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
 				Idiomas idioma = (Idiomas) query2.uniqueResult();
-								
-				Set idiomas = pais.getIdiomases();
 				//Muy importante hacer esta comprobación para evitar NullPointerException
-				if (idiomas == null) {
+				Set idiomas = pais.getIdiomases();
+				if (idiomas==null) {
 					idiomas = new HashSet<>();
 				}
 				idiomas.add(idioma);
 				pais.setIdiomases(idiomas);
 				
-//				pais.getIdiomases().add(nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
-//				idioma.getPaiseses().add(pais);
-				
-				System.out.println(pais);
-//				sesion.update(idioma);
 				sesion.update(pais);
 			}
 		}catch (PersistenceException e) {
@@ -266,7 +270,6 @@ public class HibernateXQJ {
 			}
 			
 		} catch (XQException e) {
-			
 			e.printStackTrace();
 			return -1;
 		}catch (PersistenceException e) {

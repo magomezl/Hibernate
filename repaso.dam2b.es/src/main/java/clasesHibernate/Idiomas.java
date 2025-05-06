@@ -25,7 +25,7 @@ public class Idiomas implements java.io.Serializable {
 		this.idioma = idioma;
 		this.paiseses = paiseses;
 	}
-
+	// Constructor que he creado sin el id
 	public Idiomas(String idioma) {
 		this.idioma = idioma;
 	}
