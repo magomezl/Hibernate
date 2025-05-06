@@ -18,6 +18,9 @@ public class Paises implements java.io.Serializable {
 	private Float km2Tierra;
 	private Set practicareligioneses = new HashSet(0);
 	private Set idiomases = new HashSet(0);
+	private Set ciudadeses = new HashSet(0);
+
+	
 	@Override
 	public String toString() {
 		return "Paises [idPais=" + idPais + ", nombre=" + nombre + ", numHabitantes=" + numHabitantes + ", superficie="
@@ -25,9 +28,7 @@ public class Paises implements java.io.Serializable {
 				+ ", practicareligioneses=" + practicareligioneses + ", idiomases=" + idiomases + ", ciudadeses="
 				+ ciudadeses + "]";
 	}
-
-	private Set ciudadeses = new HashSet(0);
-
+	
 	public Paises() {
 	}
 

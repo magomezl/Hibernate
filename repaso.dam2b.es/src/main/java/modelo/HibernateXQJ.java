@@ -20,6 +20,7 @@ import org.w3c.dom.Node;
 import clasesHibernate.Ciudades;
 import clasesHibernate.Idiomas;
 import clasesHibernate.Paises;
+import clasesHibernate.Practicareligiones;
 import clasesHibernate.Religiones;
 
 public class HibernateXQJ {
@@ -36,7 +37,8 @@ public class HibernateXQJ {
 //			traspasaReligiones(sesion)==-1 ||
 //			traspasaPaises(sesion)==-1 || traspasaCiudades(sesion)==-1
 //			traspasaIdiomas(sesion)==-1 || 
-			if (traspasaIdiomasPaises(sesion)==-1 || traspasaPracticaReligiones(sesion)==-1) {
+			if (traspasaReligiones(sesion)==-1 || traspasaPaises(sesion)==-1 || traspasaCiudades(sesion)==-1 || traspasaIdiomas(sesion)==-1 ||
+					traspasaIdiomasPaises(sesion)==-1 || traspasaPracticaReligiones(sesion)==-1) {
 				t.rollback();
 			}else {
 				t.commit();
@@ -123,8 +125,46 @@ public class HibernateXQJ {
 	}
 	
 	private static int traspasaPracticaReligiones(Session sesion) {
-		// TODO Auto-generated method stub
+		try {
+			String queryPractica = "for $practica in doc('EjerciciosRepaso/religiones.xml')//religiones_en_paises/practica\r\n"
+					+ "let $nombre_pais := //paises/pais[@id_pais = $practica/@id_pais]/@nombre\r\n"
+					+ "let $nombre_religion := //religiones/religion[@id_religion = $practica/@id_religion]/@denominacion\r\n"
+					+ "return\r\n"
+					+ "    <practica pais=\"{$nombre_pais}\" religion=\"{$nombre_religion}\" practicantes=\"{$practica/@practicantes}\" />"; 
+			XQPreparedExpression exprPractica= xqc.prepareExpression(queryPractica);
+			XQResultSequence resultPractica = exprPractica.executeQuery();
+			while(resultPractica.next()) {
+				
+				Node nodo = resultPractica.getNode();
+				//Obtengo pais y asigno idioma 
+				
+				String hql = "FROM Paises p WHERE p.nombre = :nombrePais";
+				Query query = sesion.createQuery(hql, Paises.class);
+				
+				query.setParameter("nombrePais", nodo.getAttributes().getNamedItem("pais").getNodeValue());
+				Paises pais = new Paises(); 
+				pais = (Paises) query.uniqueResult();
+				
+				String hql2 = "FROM Religiones r WHERE r.nombre = :nombreReligion";
+				Query query2 = sesion.createQuery(hql2, Religiones.class);
+				query2.setParameter("nombreReligion", nodo.getAttributes().getNamedItem("religion").getNodeValue());
+				Religiones religion = (Religiones) query2.uniqueResult();
+								
+				Practicareligiones practicaR = new Practicareligiones(religion, pais, Float.parseFloat(nodo.getAttributes().getNamedItem("practicantes").getNodeValue()));
+				sesion.persist(practicaR);
+			}
+		}catch (PersistenceException e) {
+			//Capturo esta excepción para que no tener problemas con los valores unique de las tablas
+			e.printStackTrace();
+			return -1;
+		} catch (XQException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
 		return 0;
+		
+
 	}
 
 	private static int traspasaIdiomas(Session sesion) {
@@ -174,19 +214,27 @@ public class HibernateXQJ {
 				String hql = "FROM Paises p WHERE p.nombre = :nombrePais";
 				Query query = sesion.createQuery(hql, Paises.class);
 				query.setParameter("nombrePais", nodo.getAttributes().getNamedItem("nombre").getNodeValue());
-				Paises pais = (Paises) query.uniqueResult();
-				pais.getIdiomases().add(nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
-				
+				Paises pais = new Paises(); 
+				pais = (Paises) query.uniqueResult();
 				
 				String hql2 = "FROM Idiomas i WHERE i.idioma = :nombreIdioma";
 				Query query2 = sesion.createQuery(hql2, Idiomas.class);
 				query2.setParameter("nombreIdioma", nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
 				Idiomas idioma = (Idiomas) query2.uniqueResult();
-				pais.getIdiomases().add(nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
-				idioma.getPaiseses().add(nodo.getAttributes().getNamedItem("nombre").getNodeValue());
+								
+				Set idiomas = pais.getIdiomases();
+				//Muy importante hacer esta comprobación para evitar NullPointerException
+				if (idiomas == null) {
+					idiomas = new HashSet<>();
+				}
+				idiomas.add(idioma);
+				pais.setIdiomases(idiomas);
+				
+//				pais.getIdiomases().add(nodo.getAttributes().getNamedItem("idioma_oficial").getNodeValue());
+//				idioma.getPaiseses().add(pais);
 				
 				System.out.println(pais);
-				sesion.update(idioma);
+//				sesion.update(idioma);
 				sesion.update(pais);
 			}
 		}catch (PersistenceException e) {

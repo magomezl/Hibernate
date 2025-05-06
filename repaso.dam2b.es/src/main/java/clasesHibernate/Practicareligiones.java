@@ -13,6 +13,12 @@ public class Practicareligiones implements java.io.Serializable {
 
 	public Practicareligiones() {
 	}
+	//Añado este constructor tb
+	public Practicareligiones(Religiones religiones, Paises paises, Float practicantes) {
+		this.religiones = religiones;
+		this.paises = paises;
+		this.practicantes = practicantes;
+	}
 
 	public Practicareligiones(PracticareligionesId id, Religiones religiones, Paises paises) {
 		this.id = id;
